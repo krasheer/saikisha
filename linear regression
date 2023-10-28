@@ -1,0 +1,63 @@
+import numpy as np
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+
+class LogitRegression():
+    def __init__(self, learning_rate, iterations):
+        self.learning_rate = learning_rate
+        self.iterations = iterations
+        self.loss = []
+        self.weights = None
+        self.bias = None
+
+    def sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
+
+    def cost(self, y_true, y_pred):
+        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+
+    def gradient_descent(self, x, y_true, y_predic):
+        m = x.shape[0]
+        dw = np.dot(x.T, (y_predic - y_true)) / m
+        db = np.sum(y_predic - y_true) / m
+        return dw, db
+
+    def fit(self, X, y):
+        self.weights = np.random.uniform(0, 1, x.shape[1])
+        self.bias = 0
+        for _ in range(self.iterations):
+            y_predic = self.sigmoid(np.dot(x, self.weights) + self.bias)
+            loss = self.cost(y, y_predic)
+            self.loss.append(loss)
+            dw, db = self.gradient_descent(x, y, y_pred)
+            self.weights -= self.learning_rate * dw
+            self.bias -= self.learning_rate * db
+
+    def predict(self, x):
+        y_predic = self.sigmoid(np.dot(x, self.weights) + self.bias)
+        return np.where(y_predic > 0.5, 1, 0)
+
+penguins = sns.load_dataset('penguins').dropna()
+penguins['sex'] = penguins['sex'].map({'Male': 1, 'Female': 0})
+features = ['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g']
+for feature in features:
+    penguins[feature] = (penguins[feature] - penguins[feature].min()) / (penguins[feature].max() - penguins[feature].min())
+train = penguins.sample(frac=0.8, random_state=50)
+test = penguins.drop(train.index)
+
+x_train = train[features].values
+y_train = train['sex'].values
+x_test = test[features].values
+y_test = test['sex'].values
+model = LogitRegression(learning_rate=1e-4, iterations=100000)
+model.fit(x_train, y_train)
+y_predic = model.predict(x_test)
+accuracy = np.mean(y_pred == y_test) * 100
+print(f'Accuracy: {accuracy:.2f}%')
+print(model.weights)
+plt.plot(range(iterations), model.loss)
+plt.xlabel('Iterations')
+plt.ylabel('Loss')
+plt.title('Loss vs. Iterations')
+plt.show()
