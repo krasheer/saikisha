@@ -40,6 +40,8 @@ class LogitRegression():
 
 penguins = sns.load_dataset('penguins').dropna()
 penguins['sex'] = penguins['sex'].map({'Male': 1, 'Female': 0})
+print("Main Data Statistics")
+print(penguins.describe(include='all'))
 features = ['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g']
 for feature in features:
     penguins[feature] = (penguins[feature] - penguins[feature].min()) / (penguins[feature].max() - penguins[feature].min())
